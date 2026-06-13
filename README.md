@@ -43,17 +43,3 @@ Writes are intentionally disabled in demo mode. Production deployments must set 
 4. Replace the consultation email in `app/custom-jersey/page.tsx` with CPX's production support channel.
 5. Connect a payment gateway and transactional email provider before accepting live payments.
 6. Monitor `/api/health`, server errors, database usage, and checkout conversion.
-
-## Resolving pull request conflicts
-
-The repository includes a helper for feature branches that conflict with an
-updated `main` branch. Run it from the feature branch with a clean working tree:
-
-```bash
-./scripts/resolve-pr-conflicts.sh main origin
-git push origin "$(git branch --show-current)"
-```
-
-The script fetches the latest target branch, starts a merge, preserves this
-branch's full-stack implementation for conflicting files, verifies that no
-unmerged paths remain, and creates the merge commit.
