@@ -1,0 +1,4 @@
+import type { Metadata } from "next";import { Inter, Oswald } from "next/font/google";import { AppShell } from "@/components/app-shell";import "./globals.css";
+const inter=Inter({subsets:["latin"],variable:"--font-inter",display:"swap"});const oswald=Oswald({subsets:["latin"],variable:"--font-oswald",display:"swap"});
+export const metadata:Metadata={metadataBase:new URL(process.env.NEXT_PUBLIC_APP_URL??"http://localhost:3000"),title:{default:"CPX Jersey — Wear Your Pride",template:"%s | CPX Jersey"},description:"Custom jersey dan sportswear berkualitas untuk tim yang ingin tampil beda.",openGraph:{title:"CPX Jersey",description:"Wear your pride. Play your game.",type:"website"}};
+export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="id"><body className={`${inter.variable} ${oswald.variable}`}><AppShell>{children}</AppShell></body></html>}

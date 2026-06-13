@@ -1,0 +1,3 @@
+import type { Metadata } from "next";import Link from "next/link";import { redirect } from "next/navigation";import { AuthForm } from "@/components/auth-form";import { register } from "@/lib/actions/auth";import { getSession } from "@/lib/auth/session";
+export const metadata:Metadata={title:"Create Account"};
+export default async function RegisterPage(){if(await getSession())redirect("/account");return <main className="auth-page"><Link className="logo" href="/"><span className="logo-mark"/><span>CPX<small>JERSEY</small></span></Link><section className="auth-card"><span className="kicker">JOIN THE SQUAD</span><h1>CREATE<br/>ACCOUNT.</h1><p>Simpan pesanan dan nikmati pengalaman belanja lebih cepat.</p><AuthForm mode="register" action={register}/></section></main>}

@@ -1,0 +1,3 @@
+import type { Metadata } from "next";import Link from "next/link";import { CheckoutForm } from "@/components/checkout-form";import { getSession } from "@/lib/auth/session";
+export const metadata:Metadata={title:"Checkout"};
+export default async function CheckoutPage(){const user=await getSession();return <main className="checkout-page"><header className="checkout-header"><Link className="logo" href="/"><span className="logo-mark"/><span>CPX<small>JERSEY</small></span></Link><span>SECURE CHECKOUT</span></header><div className="checkout-wrap"><h1>CHECKOUT.</h1><CheckoutForm user={user}/></div></main>}
