@@ -4,3 +4,7 @@ out
 .env
 .env*.local
 npm-debug.log*
+build-output.log
+dev.log
+tsconfig.tsbuildinfo
+.commandcode/

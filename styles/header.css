@@ -1,0 +1,107 @@
+.topbar {
+  height: 28px;
+  background: #d71920;
+  color: #fff;
+  padding: 0 4vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+}
+.header {
+  height: 76px;
+  background: rgba(12, 12, 13, 0.95) !important;
+  backdrop-filter: blur(8px) !important;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 0 4vw;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1000 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-oswald);
+  font-size: 25px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+.logo-mark {
+  width: 35px;
+  height: 38px;
+  background: #e21c25;
+  clip-path: polygon(0 0, 100% 12%, 81% 50%, 100% 88%, 0 100%, 23% 50%);
+  display: grid;
+  place-items: center;
+  font-size: 0;
+}
+.logo small {
+  display: block;
+  font: 600 7px var(--font-inter);
+  letter-spacing: 4px;
+  margin-top: -4px;
+}
+.header nav {
+  display: flex;
+  gap: 34px;
+  margin: auto;
+  font: 600 12px var(--font-inter);
+  letter-spacing: 0.5px;
+}
+.header nav a {
+  padding: 31px 0;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.header nav a:hover {
+  border-color: #e3262e;
+  color: #e3262e;
+}
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.actions button,
+.icon-btn {
+  border: 0;
+  background: none;
+  color: #fff;
+  padding: 0;
+  position: relative;
+}
+.actions svg,
+.icon-btn svg {
+  width: 19px;
+}
+.bag {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.bag b {
+  position: absolute;
+  right: -8px;
+  top: -8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #e3262e;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+}
+.mobile-only,
+.mobile-menu {
+  display: none;
+}

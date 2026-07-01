@@ -1,0 +1,24 @@
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  background: #f5f4f0;
+  color: #111;
+  font-family: var(--font-inter), Arial, sans-serif;
+}
+button,
+a {
+  font: inherit;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+button {
+  cursor: pointer;
+}

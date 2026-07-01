@@ -1,0 +1,79 @@
+footer {
+  background: #0d0d0e;
+  color: white;
+  padding: 70px 6vw 25px;
+}
+.footer-top {
+  display: grid;
+  grid-template-columns: 2.2fr repeat(4, 1fr);
+  gap: 45px;
+}
+.footer-brand-col {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 15px !important;
+  align-items: flex-start !important;
+}
+.footer-slogan {
+  margin: 0 !important;
+  font-size: 13px !important;
+  color: #888 !important;
+  line-height: 1.6 !important;
+}
+.social {
+  display: flex !important;
+  gap: 12px !important;
+  margin-top: 5px !important;
+  align-items: center !important;
+}
+.social a {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  margin-bottom: 0 !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+.social a:hover {
+  color: #ffffff !important;
+  background: #e3262e !important;
+  border-color: #e3262e !important;
+  transform: translateY(-3px) scale(1.08) !important;
+  box-shadow: 0 6px 15px rgba(227, 38, 46, 0.45) !important;
+}
+.social svg {
+  width: 18px !important;
+  height: 18px !important;
+  stroke-width: 2.2px !important;
+  display: block !important;
+}
+.footer-top > div {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.footer-top b { font-size: 10px; letter-spacing: 1.5px; margin-bottom: 8px; }
+.footer-top a:not(.logo) {
+  font-size: 9px;
+  color: #888;
+  transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  display: inline-block;
+  align-self: flex-start;
+}
+.footer-top a:not(.logo):hover { color: #e3262e; transform: translateX(4px); }
+.footer-bottom {
+  border-top: 1px solid #282828;
+  margin-top: 65px;
+  padding-top: 22px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 7px;
+  color: #666;
+  letter-spacing: 0.5px;
+}
