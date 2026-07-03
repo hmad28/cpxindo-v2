@@ -1,13 +1,13 @@
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import { AdminSidebar } from './components/admin-sidebar';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
   const session = cookieStore.get('cpx_admin_session');
+  const isAuthenticated = session?.value === 'authenticated';
 
-  if (!session || session.value !== 'authenticated') {
-    redirect('/admin/login');
+  if (!isAuthenticated) {
+    return <>{children}</>;
   }
 
   return (
