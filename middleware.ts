@@ -1,21 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export function middleware(req: NextRequest) {
-  const { pathname, searchParams } = req.nextUrl;
+  const { pathname } = req.nextUrl;
 
-  // Protect admin tab on dashboard
-  if (pathname === '/dashboard' && searchParams.get('admin') === 'true') {
-    const session = req.cookies.get('cpx_admin_session');
-    if (!session || session.value !== 'authenticated') {
-      const url = req.nextUrl.clone();
-      url.searchParams.delete('admin');
-      return NextResponse.redirect(url);
+  if (pathname.startsWith('/admin')) {
+    const res = NextResponse.next();
+    res.headers.set('x-admin-route', '1');
+
+    if (pathname !== '/admin/login') {
+      const session = req.cookies.get('cpx_admin_session');
+      if (!session || session.value !== 'authenticated') {
+        return NextResponse.redirect(new URL('/admin/login', req.url));
+      }
     }
+
+    return res;
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/dashboard'],
+  matcher: ['/admin/:path*'],
 };

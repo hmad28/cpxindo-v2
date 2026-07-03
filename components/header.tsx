@@ -123,9 +123,9 @@ export function Header() {
           </a>
 
           {/* Account Button */}
-          <a 
-            href="/dashboard" 
-            aria-label="Account" 
+          <a
+            href="/admin"
+            aria-label="Admin Panel"
             className="desktop-icon"
           >
             <CircleUserRound />

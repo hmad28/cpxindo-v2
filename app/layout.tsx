@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, Oswald } from 'next/font/google';
+import { headers } from 'next/headers';
 import './globals.css';
 import { CartProvider } from '@/lib/cart-context';
 import { Header } from '@/components/header';
@@ -30,16 +31,19 @@ export const metadata: Metadata = {
   }
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const hdrs = await headers();
+  const isAdmin = hdrs.get('x-admin-route') === '1';
+
   return (
     <html lang="id" suppressHydrationWarning>
       <body className={`${inter.variable} ${oswald.variable}`} suppressHydrationWarning>
         <CartProvider>
-          <Header />
+          {!isAdmin && <Header />}
           <ErrorBoundary>
             {children}
           </ErrorBoundary>
-          <Footer />
+          {!isAdmin && <Footer />}
         </CartProvider>
       </body>
     </html>
