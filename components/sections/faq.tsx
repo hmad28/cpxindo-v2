@@ -8,11 +8,22 @@ export function FaqSection() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    fetch('/api/faqs').then(r => r.json()).then(setFaqsList);
+    const loadFaqs = async () => {
+      try {
+        const res = await fetch('/api/faqs');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (Array.isArray(data)) setFaqsList(data);
+      } catch {
+        setFaqsList([]);
+      }
+    };
+
+    loadFaqs();
 
     // Listen to FAQ updates from Admin Panel
     const handleFaqUpdate = () => {
-      fetch('/api/faqs').then(r => r.json()).then(setFaqsList);
+      loadFaqs();
     };
     window.addEventListener('faq-update', handleFaqUpdate);
     return () => {

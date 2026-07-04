@@ -49,7 +49,7 @@ export function TestimonialsSection() {
                   ))}
                 </div>
                 <p style={{ fontStyle: 'italic', color: '#333', fontSize: '15px', lineHeight: '1.7', margin: '0 0 20px 0' }}>
-                  "{t.text}"
+                  &ldquo;{t.text}&rdquo;
                 </p>
               </div>
               <div style={{ borderTop: '1px solid #eee', paddingTop: '15px', display: 'flex', alignItems: 'center', gap: '12px' }}>

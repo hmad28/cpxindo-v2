@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
+import { createAdminSession } from '@/lib/admin-session';
 
 // Simple in-memory rate limiter
 const attempts = new Map<string, { count: number; resetAt: number }>();
@@ -25,7 +26,8 @@ export async function POST(req: NextRequest) {
   }
 
   const hash = process.env.ADMIN_PASSCODE_HASH;
-  if (!hash) {
+  const sessionSecret = process.env.SESSION_SECRET;
+  if (!hash || !sessionSecret) {
     return NextResponse.json({ error: 'Server tidak terkonfigurasi' }, { status: 500 });
   }
 
@@ -50,7 +52,7 @@ export async function POST(req: NextRequest) {
   attempts.delete(ip);
 
   const res = NextResponse.json({ success: true });
-  res.cookies.set('cpx_admin_session', 'authenticated', {
+  res.cookies.set('cpx_admin_session', await createAdminSession(sessionSecret, 60 * 60 * 8), {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',

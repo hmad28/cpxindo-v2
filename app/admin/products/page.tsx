@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Plus, Trash2, Check, X } from '@/components/icons';
+import { adminFetch } from '@/lib/admin-fetch';
 
 interface Product {
   id: string;
@@ -34,6 +35,7 @@ export default function AdminProductsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState(emptyProduct);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetch('/api/products').then(r => r.json()).then(data => {
@@ -68,8 +70,13 @@ export default function AdminProductsPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Hapus produk ini?')) return;
-    await fetch(`/api/products/${id}`, { method: 'DELETE' });
-    setProducts(prev => prev.filter(p => p.id !== id));
+    try {
+      setError('');
+      await adminFetch(`/api/products/${id}`, { method: 'DELETE' });
+      setProducts(prev => prev.filter(p => p.id !== id));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Gagal menghapus produk');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -92,12 +99,23 @@ export default function AdminProductsPage() {
     };
 
     if (editing) {
-      await fetch(`/api/products/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      setProducts(prev => prev.map(p => p.id === id ? { ...p, ...body } : p));
+      try {
+        setError('');
+        const updated = await adminFetch<Product>(`/api/products/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        setProducts(prev => prev.map(p => p.id === id ? updated : p));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Gagal menyimpan produk');
+        return;
+      }
     } else {
-      const res = await fetch('/api/products', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      const created = await res.json();
-      setProducts(prev => [...prev, created]);
+      try {
+        setError('');
+        const created = await adminFetch<Product>('/api/products', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        setProducts(prev => [...prev, created]);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Gagal menyimpan produk');
+        return;
+      }
     }
     setShowForm(false);
     setEditing(null);
@@ -225,6 +243,7 @@ export default function AdminProductsPage() {
           </form>
         </div>
       )}
+      {error && <p style={{ color: '#e3262e', font: '600 13px var(--font-inter)', marginBottom: '16px' }}>{error}</p>}
 
       {/* Product Table */}
       <div style={{ background: '#fff', border: '1px solid #e1e0db', borderRadius: '10px', overflow: 'hidden' }}>

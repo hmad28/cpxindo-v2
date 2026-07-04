@@ -1,13 +1,15 @@
 import { z } from 'zod';
 
+const ImageRefSchema = z.string().url().or(z.string().regex(/^\/images\/[A-Za-z0-9._~:/?#[\]@!$&'()*+,;=%-]+$/));
+
 export const ProductSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1).max(200),
   type: z.string().min(1).max(100),
   price: z.number().positive(),
   discountPrice: z.number().positive().optional(),
-  image: z.string().url(),
-  images: z.array(z.string().url()).min(1),
+  image: ImageRefSchema,
+  images: z.array(ImageRefSchema).min(1),
   tag: z.string().max(50).optional(),
   colors: z.array(z.string()).min(1),
   sizes: z.array(z.string()).min(1),
@@ -30,34 +32,35 @@ export const TestimonialSchema = z.object({
 
 export const HeroSlideSchema = z.object({
   id: z.string().min(1),
-  kicker: z.string().max(100),
   title: z.string().min(1).max(200),
   subtitle: z.string().max(500),
-  image: z.string().url(),
-  cta: z.string().max(50),
-  ctaLink: z.string().max(200),
+  image: ImageRefSchema,
 });
 
 export const FAQSchema = z.object({
+  id: z.string().min(1),
   q: z.string().min(1).max(500),
   a: z.string().min(1).max(2000),
 });
 
 export const CMSSettingsSchema = z.object({
-  brandName: z.string().max(100),
-  heroTitle: z.string().max(200),
-  heroSubtitle: z.string().max(500),
-  storyTitle: z.string().max(200),
-  storyText: z.string().max(2000),
-  storyImage: z.string().url(),
-  mapsUrl: z.string().url().optional().or(z.literal('')),
-  whatsappNumber: z.string().max(20),
-  email: z.string().email().max(100),
-  address: z.string().max(500),
-  instagram: z.string().max(100),
-  facebook: z.string().max(100),
-  youtube: z.string().max(100),
-  tiktok: z.string().max(100),
+  shopName: z.string().min(1).max(100),
+  slogan: z.string().min(1).max(200),
+  address: z.string().min(1).max(1000),
+  mapsUrl: z.string().url().or(z.literal('')),
+  instagramUrl: z.string().url().or(z.literal('')),
+  tiktokUrl: z.string().url().or(z.literal('')),
+  shopeeUrl: z.string().url().or(z.literal('')),
+  tokopediaUrl: z.string().url().or(z.literal('')),
+  lazadaUrl: z.string().url().or(z.literal('')),
+  aboutTitle: z.string().min(1).max(200),
+  aboutDesc1: z.string().min(1).max(2000),
+  aboutDesc2: z.string().min(1).max(2000),
+  customImage: ImageRefSchema,
+  customFabricChipTitle: z.string().min(1).max(100),
+  customFabricChipDesc: z.string().min(1).max(200),
+  customTitle: z.string().min(1).max(200),
+  customSubtitle: z.string().min(1).max(500),
 });
 
 export type ValidatedProduct = z.infer<typeof ProductSchema>;

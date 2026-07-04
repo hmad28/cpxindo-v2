@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db/drizzle";
 import { products } from "@/lib/db/schema";
 import { requireAdmin } from "@/lib/api-auth";
+import { parseJson } from "@/lib/api-validation";
+import { ProductSchema } from "@/lib/validations";
 
 export async function GET() {
   const db = getDb();
@@ -14,7 +16,8 @@ export async function POST(req: Request) {
   if (authErr) return authErr;
 
   const db = getDb();
-  const body = await req.json();
-  const inserted = await db.insert(products).values(body).returning();
+  const parsed = await parseJson(req, ProductSchema);
+  if (parsed.error) return parsed.error;
+  const inserted = await db.insert(products).values(parsed.data).returning();
   return NextResponse.json(inserted[0], { status: 201 });
 }

@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { FileText, Check } from '@/components/icons';
+import { adminFetch } from '@/lib/admin-fetch';
 
 interface CMSSettings {
   shopName: string;
@@ -34,6 +35,7 @@ export default function AdminCmsPage() {
   const [cms, setCms] = useState<CMSSettings>(emptyCMS);
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetch('/api/cms').then(r => r.json()).then(data => {
@@ -66,14 +68,19 @@ export default function AdminCmsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await fetch('/api/cms', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(cms),
-    });
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-    window.dispatchEvent(new Event('cms-update'));
+    try {
+      setError('');
+      await adminFetch('/api/cms', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cms),
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+      window.dispatchEvent(new Event('cms-update'));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Gagal menyimpan CMS');
+    }
   };
 
   if (loading) {
@@ -196,6 +203,7 @@ export default function AdminCmsPage() {
           </button>
           {saved && <span style={{ font: '400 12px var(--font-inter)', color: '#10b981' }}>Perubahan berhasil disimpan</span>}
         </div>
+        {error && <p style={{ color: '#e3262e', font: '600 13px var(--font-inter)' }}>{error}</p>}
       </form>
     </div>
   );

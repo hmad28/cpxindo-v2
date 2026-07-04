@@ -9,15 +9,18 @@ jest.mock('../../icons', () => ({
   ChevronDown: (props: any) => <svg data-testid="chevron-down" {...props} />,
 }));
 
-// Mock db to return controlled data (async — component calls .then())
-jest.mock('@/lib/db', () => ({
-  getStoredFAQs: () => Promise.resolve([
+const mockFaqs = [
     { id: 'faq-1', q: 'Apakah bisa pesan satuan?', a: 'Bisa, CPX melayani pemesanan satuan.' },
     { id: 'faq-2', q: 'Berapa lama proses?', a: '7-10 hari kerja setelah desain disetujui.' },
     { id: 'faq-3', q: 'Bahan apa yang digunakan?', a: 'Dryfit Milano dengan pola zig-zag.' },
-  ]),
-  getStoredCMS: () => Promise.resolve({ shopName: 'CPX JERSEY' }),
-}));
+];
+
+beforeEach(() => {
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    json: () => Promise.resolve(mockFaqs),
+  }) as jest.Mock;
+});
 
 // Helper: wait for FAQ items to render after async load
 async function renderAndWait() {
@@ -35,9 +38,10 @@ describe('FaqSection', () => {
     expect(screen.getByText('Bahan apa yang digunakan?')).toBeTruthy();
   });
 
-  it('renders section heading', () => {
+  it('renders section heading', async () => {
     render(<FaqSection />);
     expect(screen.getByText(/FREQUENTLY ASKED/)).toBeTruthy();
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/faqs'));
   });
 
   it('starts with all answers collapsed', async () => {

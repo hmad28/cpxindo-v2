@@ -3,6 +3,8 @@ import { eq } from "drizzle-orm";
 import { getDb } from "@/lib/db/drizzle";
 import { cmsSettings } from "@/lib/db/schema";
 import { requireAdmin } from "@/lib/api-auth";
+import { parseJson } from "@/lib/api-validation";
+import { CMSSettingsSchema } from "@/lib/validations";
 
 export async function GET() {
   const db = getDb();
@@ -16,7 +18,9 @@ export async function PUT(req: Request) {
   if (authErr) return authErr;
 
   const db = getDb();
-  const body = await req.json();
+  const parsed = await parseJson(req, CMSSettingsSchema);
+  if (parsed.error) return parsed.error;
+  const body = parsed.data;
   const updated = await db
     .insert(cmsSettings)
     .values({ ...body, id: "singleton", updatedAt: new Date() })

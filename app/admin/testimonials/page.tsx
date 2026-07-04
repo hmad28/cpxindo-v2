@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Plus, Trash2, Check, X, Star } from '@/components/icons';
+import { adminFetch } from '@/lib/admin-fetch';
 
 interface Testimonial {
   id: string;
@@ -18,6 +19,7 @@ export default function AdminTestimonialsPage() {
   const [team, setTeam] = useState('');
   const [text, setText] = useState('');
   const [rating, setRating] = useState(5);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetch('/api/testimonials').then(r => r.json()).then(data => {
@@ -45,8 +47,13 @@ export default function AdminTestimonialsPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Hapus testimonial ini?')) return;
-    await fetch(`/api/testimonials/${id}`, { method: 'DELETE' });
-    setTestimonials(prev => prev.filter(t => t.id !== id));
+    try {
+      setError('');
+      await adminFetch(`/api/testimonials/${id}`, { method: 'DELETE' });
+      setTestimonials(prev => prev.filter(t => t.id !== id));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Gagal menghapus testimonial');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -55,12 +62,23 @@ export default function AdminTestimonialsPage() {
     const body = { id, name, team, text, rating };
 
     if (editing) {
-      await fetch(`/api/testimonials/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      setTestimonials(prev => prev.map(t => t.id === id ? { ...t, name, team, text, rating } : t));
+      try {
+        setError('');
+        const updated = await adminFetch<Testimonial>(`/api/testimonials/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        setTestimonials(prev => prev.map(t => t.id === id ? updated : t));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Gagal menyimpan testimonial');
+        return;
+      }
     } else {
-      const res = await fetch('/api/testimonials', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      const created = await res.json();
-      setTestimonials(prev => [...prev, created]);
+      try {
+        setError('');
+        const created = await adminFetch<Testimonial>('/api/testimonials', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        setTestimonials(prev => [...prev, created]);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Gagal menyimpan testimonial');
+        return;
+      }
     }
     setShowForm(false);
     setEditing(null);
@@ -148,6 +166,7 @@ export default function AdminTestimonialsPage() {
           </form>
         </div>
       )}
+      {error && <p style={{ color: '#e3262e', font: '600 13px var(--font-inter)', marginBottom: '16px' }}>{error}</p>}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
         {testimonials.map(test => (

@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "test": "jest",
     "test:watch": "jest --watch",
     "db:push": "drizzle-kit push",
@@ -21,7 +21,7 @@
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.2",
     "lucide-react": "^0.468.0",
-    "next": "^16.2.9",
+    "next": "^16.2.10",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "typescript": "^5.5.3",
@@ -35,11 +35,16 @@
     "@types/jest": "^30.0.0",
     "dotenv": "^17.4.2",
     "drizzle-kit": "^0.31.10",
-    "eslint": "^10.6.0",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.10",
     "jest": "^30.4.2",
     "jest-environment-jsdom": "^30.4.1",
     "playwright": "^1.61.1",
     "ts-node": "^10.9.2",
     "tsx": "^4.22.4"
+  },
+  "overrides": {
+    "esbuild": "^0.25.11",
+    "postcss": "^8.5.10"
   }
 }

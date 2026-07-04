@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Plus, Trash2, Check, X } from '@/components/icons';
+import { adminFetch } from '@/lib/admin-fetch';
 
 interface FAQ {
   id: string;
@@ -14,6 +15,7 @@ export default function AdminFaqsPage() {
   const [editing, setEditing] = useState<FAQ | null>(null);
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetch('/api/faqs').then(r => r.json()).then(data => {
@@ -37,8 +39,13 @@ export default function AdminFaqsPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Hapus FAQ ini?')) return;
-    await fetch(`/api/faqs/${id}`, { method: 'DELETE' });
-    setFaqs(prev => prev.filter(f => f.id !== id));
+    try {
+      setError('');
+      await adminFetch(`/api/faqs/${id}`, { method: 'DELETE' });
+      setFaqs(prev => prev.filter(f => f.id !== id));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Gagal menghapus FAQ');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -47,12 +54,23 @@ export default function AdminFaqsPage() {
     const body = { id, q: question, a: answer };
 
     if (editing) {
-      await fetch(`/api/faqs/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      setFaqs(prev => prev.map(f => f.id === id ? { ...f, q: question, a: answer } : f));
+      try {
+        setError('');
+        const updated = await adminFetch<FAQ>(`/api/faqs/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        setFaqs(prev => prev.map(f => f.id === id ? updated : f));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Gagal menyimpan FAQ');
+        return;
+      }
     } else {
-      const res = await fetch('/api/faqs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      const created = await res.json();
-      setFaqs(prev => [...prev, created]);
+      try {
+        setError('');
+        const created = await adminFetch<FAQ>('/api/faqs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        setFaqs(prev => [...prev, created]);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Gagal menyimpan FAQ');
+        return;
+      }
     }
     setShowForm(false);
     setEditing(null);
@@ -115,6 +133,7 @@ export default function AdminFaqsPage() {
           </form>
         </div>
       )}
+      {error && <p style={{ color: '#e3262e', font: '600 13px var(--font-inter)', marginBottom: '16px' }}>{error}</p>}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {faqs.map(faq => (

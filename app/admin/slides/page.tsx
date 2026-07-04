@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Plus, Trash2, Check, X, Share2 } from '@/components/icons';
+import { adminFetch } from '@/lib/admin-fetch';
 
 interface HeroSlide {
   id: string;
@@ -16,6 +17,7 @@ export default function AdminSlidesPage() {
   const [title, setTitle] = useState('');
   const [subtitle, setSubtitle] = useState('');
   const [image, setImage] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetch('/api/slides').then(r => r.json()).then(data => {
@@ -41,8 +43,13 @@ export default function AdminSlidesPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Hapus slide banner ini?')) return;
-    await fetch(`/api/slides/${id}`, { method: 'DELETE' });
-    setSlides(prev => prev.filter(s => s.id !== id));
+    try {
+      setError('');
+      await adminFetch(`/api/slides/${id}`, { method: 'DELETE' });
+      setSlides(prev => prev.filter(s => s.id !== id));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Gagal menghapus slide');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,12 +58,23 @@ export default function AdminSlidesPage() {
     const body = { id, title, subtitle, image };
 
     if (editing) {
-      await fetch(`/api/slides/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      setSlides(prev => prev.map(s => s.id === id ? { ...s, title, subtitle, image } : s));
+      try {
+        setError('');
+        const updated = await adminFetch<HeroSlide>(`/api/slides/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        setSlides(prev => prev.map(s => s.id === id ? updated : s));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Gagal menyimpan slide');
+        return;
+      }
     } else {
-      const res = await fetch('/api/slides', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      const created = await res.json();
-      setSlides(prev => [...prev, created]);
+      try {
+        setError('');
+        const created = await adminFetch<HeroSlide>('/api/slides', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        setSlides(prev => [...prev, created]);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Gagal menyimpan slide');
+        return;
+      }
     }
     setShowForm(false);
     setEditing(null);
@@ -130,6 +148,7 @@ export default function AdminSlidesPage() {
           </form>
         </div>
       )}
+      {error && <p style={{ color: '#e3262e', font: '600 13px var(--font-inter)', marginBottom: '16px' }}>{error}</p>}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
         {slides.map(slide => (
