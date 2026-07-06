@@ -1,16 +1,23 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { eq } from "drizzle-orm";
 import { getDb } from "@/lib/db/drizzle";
 import { cmsSettings } from "@/lib/db/schema";
 import { requireAdmin } from "@/lib/api-auth";
 import { parseJson } from "@/lib/api-validation";
 import { CMSSettingsSchema } from "@/lib/validations";
+import { getCachedCMS, storefrontTags } from "@/lib/storefront";
+
+function revalidateCMS() {
+  revalidateTag(storefrontTags.cms, { expire: 0 });
+  revalidateTag(storefrontTags.all, { expire: 0 });
+}
 
 export async function GET() {
-  const db = getDb();
-  const rows = await db.select().from(cmsSettings).where(eq(cmsSettings.id, "singleton"));
-  const row = rows[0] ?? null;
-  return NextResponse.json(row);
+  const row = await getCachedCMS();
+  return NextResponse.json(row, {
+    headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=3600" },
+  });
 }
 
 export async function PUT(req: Request) {
@@ -30,5 +37,6 @@ export async function PUT(req: Request) {
     })
     .returning();
 
+  revalidateCMS();
   return NextResponse.json(updated[0]);
 }

@@ -1,29 +1,13 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { ArrowRight, ShieldCheck, Zap, Clock, Headphones } from '../icons';
+import { ShieldCheck, Zap, Clock, Headphones } from '../icons';
 import type { CMSSettings } from '@/lib/db';
 
-export function Story() {
-  const [cms, setCms] = useState<CMSSettings | null>(null);
-
-  useEffect(() => {
-    fetch('/api/cms').then(r => r.json()).then(setCms);
-  }, []);
-
+export function Story({ cms }: { cms: CMSSettings }) {
   const missions = [
     { icon: <Zap />, text: 'Memberikan kebebasan desain agar setiap tim punya ciri khas unik.' },
     { icon: <ShieldCheck />, text: 'Menggunakan bahan premium dan sangat nyaman dipakai.' },
     { icon: <Clock />, text: 'Menjamin proses produksi cepat dan pengiriman tepat waktu.' },
     { icon: <Headphones />, text: 'Memberikan pelayanan yang ramah dan konsultasi desain gratis.' }
   ];
-
-  if (!cms) {
-    return (
-      <section className="section story-about" id="story" style={{ background: '#fcfcf9', padding: '60px 0', borderTop: '1px solid #eaeae5', textAlign: 'center' }}>
-        <p>Loading brand story...</p>
-      </section>
-    );
-  }
 
   return (
     <section className="section story-about" id="story" style={{ background: '#fcfcf9', borderTop: '1px solid #eaeae5' }}>
@@ -55,7 +39,6 @@ export function Story() {
                 {cms.address}
               </p>
 
-              {/* Google Maps Embed */}
               {cms.mapsUrl && cms.mapsUrl.startsWith('https://www.google.com/maps') && (
                 <div style={{ borderRadius: '8px', overflow: 'hidden', height: '200px', border: '1px solid #eee' }}>
                   <iframe

@@ -10,13 +10,12 @@ import { WishlistDrawer } from './wishlist-drawer';
 
 const links = ['New Drops', 'Products', 'Custom Jersey', 'Teams', 'About Us'];
 
-export function Header() {
+export function Header({ initialCms }: { initialCms: CMSSettings }) {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [wishlistCount, setWishlistCount] = useState(0);
-  const [cms, setCms] = useState<CMSSettings | null>(null);
   const [cartOpen, setCartOpen] = useState(false);
   const [wishlistOpen, setWishlistOpen] = useState(false);
   const { getTotalItems } = useCart();
@@ -30,20 +29,14 @@ export function Header() {
 
   useEffect(() => {
     updateWishlistCount();
-    fetch('/api/cms').then(r => r.json()).then(setCms);
 
     window.addEventListener('wishlist-update', updateWishlistCount);
 
-    const handleCmsUpdate = () => {
-      fetch('/api/cms').then(r => r.json()).then(setCms);
-    };
     const handleCartOpen = () => setCartOpen(true);
-    window.addEventListener('cms-update', handleCmsUpdate);
     window.addEventListener('cart-open', handleCartOpen);
 
     return () => {
       window.removeEventListener('wishlist-update', updateWishlistCount);
-      window.removeEventListener('cms-update', handleCmsUpdate);
       window.removeEventListener('cart-open', handleCartOpen);
     };
   }, []);
@@ -57,7 +50,7 @@ export function Header() {
     }
   };
 
-  const shopName = cms?.shopName || 'CPX JERSEY';
+  const shopName = initialCms.shopName || 'CPX JERSEY';
 
   return (
     <>

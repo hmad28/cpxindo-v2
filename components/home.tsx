@@ -1,4 +1,4 @@
-'use client';
+import { Suspense } from 'react';
 import { Hero } from './sections/hero';
 import { Marquee } from './sections/marquee';
 import { Products } from './sections/products';
@@ -9,19 +9,22 @@ import { Benefits } from './sections/benefits';
 import { TestimonialsSection } from './sections/testimonials';
 import { FaqSection } from './sections/faq';
 import { Newsletter } from './sections/newsletter';
+import type { StorefrontData } from '@/lib/storefront';
 
-export function Home() {
+export function Home({ data }: { data: StorefrontData }) {
   return (
     <main id="top">
-      <Hero />
+      <Hero initialSlides={data.slides} />
       <Marquee />
-      <Products />
-      <CustomSection />
-      <Story />
+      <Suspense fallback={<section className="section products" id="products" />}>
+        <Products initialProducts={data.products} />
+      </Suspense>
+      <CustomSection cms={data.cms} />
+      <Story cms={data.cms} />
       <Teams />
       <Benefits />
-      <TestimonialsSection />
-      <FaqSection />
+      <TestimonialsSection testimonials={data.testimonials} />
+      <FaqSection faqs={data.faqs} />
       <Newsletter />
     </main>
   );

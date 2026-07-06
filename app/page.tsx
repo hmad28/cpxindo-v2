@@ -1,2 +1,7 @@
 import { Home } from '@/components/home';
-export default function Page(){ return <Home/> }
+import { getStorefrontData } from '@/lib/storefront';
+
+export default async function Page() {
+  const data = await getStorefrontData();
+  return <Home data={data} />;
+}

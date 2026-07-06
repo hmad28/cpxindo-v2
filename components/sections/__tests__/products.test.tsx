@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { Products } from "../products";
 jest.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(),
@@ -29,19 +29,13 @@ const mockProducts = Array.from({ length: 9 }, (_, index) => ({
   suitableFor: ["Football"],
 }));
 
-beforeEach(() => {
-  global.fetch = jest.fn().mockResolvedValue({
-    ok: true,
-    json: () => Promise.resolve(mockProducts),
-  }) as jest.Mock;
-});
-
 describe("Products section", () => {
-  it("paginates homepage products", async () => {
-    render(<Products />);
+  it("paginates homepage products from initial server data", () => {
+    global.fetch = jest.fn() as jest.Mock;
+    render(<Products initialProducts={mockProducts} />);
 
-    await waitFor(() => expect(screen.getByText("Product 1")).toBeTruthy());
-
+    expect(screen.getByText("Product 1")).toBeTruthy();
+    expect(global.fetch).not.toHaveBeenCalled();
     expect(screen.getAllByTestId("product-card")).toHaveLength(8);
     expect(screen.queryByText("Product 9")).toBeNull();
 
@@ -51,4 +45,3 @@ describe("Products section", () => {
     expect(screen.queryByText("Product 1")).toBeNull();
   });
 });
-

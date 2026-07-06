@@ -7,22 +7,17 @@ import { sports, Sport, Product } from '../../lib/data';
 
 const PRODUCTS_PER_PAGE = 8;
 
-export function Products() {
+export function Products({ initialProducts }: { initialProducts: Product[] }) {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('search') || '';
   const [sport, setSport] = useState<Sport>('All');
-  const [items, setItems] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
-
-  useEffect(() => {
-    fetch('/api/products').then(r => r.json()).then(setItems);
-  }, []);
 
   useEffect(() => {
     setPage(1);
   }, [sport, searchQuery]);
 
-  const filteredProducts = items.filter((product) => {
+  const filteredProducts = initialProducts.filter((product) => {
     const sportMatch = sport === 'All' ||
       product.type.toLowerCase().includes(sport.toLowerCase()) ||
       (product.suitableFor && product.suitableFor.some((item) => item.toLowerCase() === sport.toLowerCase()));

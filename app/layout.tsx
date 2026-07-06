@@ -6,6 +6,7 @@ import { CartProvider } from '@/lib/cart-context';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/sections/footer';
 import { ErrorBoundary } from '@/components/error-boundary';
+import { getCachedCMS } from '@/lib/storefront';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const oswald = Oswald({ subsets: ['latin'], variable: '--font-oswald' });
@@ -16,6 +17,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://cpxindo.id'),
   title: 'CPX Jersey — Bikin Jersey Tim Yang Kelihatan Beda',
   description: 'Studio jersey custom untuk tim, komunitas, dan brand yang butuh tampilan kuat, bahan nyaman, dan proses produksi yang jelas.',
   icons: {
@@ -30,7 +32,7 @@ export const metadata: Metadata = {
     siteName: 'CPX Jersey',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=1200&h=630&q=80',
+        url: '/images/cpx_welcome.png',
         width: 1200,
         height: 630,
         alt: 'CPX Jersey'
@@ -44,18 +46,21 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const hdrs = await headers();
   const isAdmin = hdrs.get('x-admin-route') === '1';
+  const cms = isAdmin ? null : await getCachedCMS();
 
   return (
     <html lang="id" suppressHydrationWarning>
       <body className={`${inter.variable} ${oswald.variable}`} suppressHydrationWarning>
         <CartProvider>
-          {!isAdmin && <Header />}
+          {!isAdmin && cms && <Header initialCms={cms} />}
           <ErrorBoundary>
             {children}
           </ErrorBoundary>
-          {!isAdmin && <Footer />}
+          {!isAdmin && cms && <Footer cms={cms} />}
         </CartProvider>
       </body>
     </html>
   );
 }
+
+

@@ -4,13 +4,9 @@ import Image from 'next/image';
 import { ArrowRight, ArrowLeft } from '../icons';
 import type { HeroSlide } from '@/lib/db';
 
-export function Hero() {
-  const [slides, setSlides] = useState<HeroSlide[]>([]);
+export function Hero({ initialSlides }: { initialSlides: HeroSlide[] }) {
+  const [slides] = useState<HeroSlide[]>(initialSlides);
   const [activeIndex, setActiveIndex] = useState(0);
-
-  useEffect(() => {
-    fetch('/api/slides').then(r => r.json()).then(setSlides);
-  }, []);
 
   useEffect(() => {
     if (slides.length <= 1) return;
@@ -31,7 +27,7 @@ export function Hero() {
   if (slides.length === 0) {
     return (
       <section className="hero-loading" style={{ height: '70vh', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <p style={{ color: '#fff' }}>Loading hero banners...</p>
+        <p style={{ color: '#fff' }}>Hero banners belum tersedia.</p>
       </section>
     );
   }

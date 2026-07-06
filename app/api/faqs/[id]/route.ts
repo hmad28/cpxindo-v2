@@ -1,10 +1,17 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { eq } from "drizzle-orm";
 import { getDb } from "@/lib/db/drizzle";
 import { faqs } from "@/lib/db/schema";
 import { requireAdmin } from "@/lib/api-auth";
 import { parseJson } from "@/lib/api-validation";
 import { FAQSchema } from "@/lib/validations";
+import { storefrontTags } from "@/lib/storefront";
+
+function revalidateFAQs() {
+  revalidateTag(storefrontTags.faqs, { expire: 0 });
+  revalidateTag(storefrontTags.all, { expire: 0 });
+}
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const authErr = await requireAdmin();
@@ -23,6 +30,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   if (!updated.length) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+  revalidateFAQs();
   return NextResponse.json(updated[0]);
 }
 
@@ -37,5 +45,6 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   if (!deleted.length) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+  revalidateFAQs();
   return NextResponse.json({ success: true });
 }

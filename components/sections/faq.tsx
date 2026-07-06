@@ -1,35 +1,10 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ChevronDown } from '../icons';
 import type { FAQ } from '@/lib/db';
 
-export function FaqSection() {
-  const [faqsList, setFaqsList] = useState<FAQ[]>([]);
+export function FaqSection({ faqs }: { faqs: FAQ[] }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-
-  useEffect(() => {
-    const loadFaqs = async () => {
-      try {
-        const res = await fetch('/api/faqs');
-        if (!res.ok) return;
-        const data = await res.json();
-        if (Array.isArray(data)) setFaqsList(data);
-      } catch {
-        setFaqsList([]);
-      }
-    };
-
-    loadFaqs();
-
-    // Listen to FAQ updates from Admin Panel
-    const handleFaqUpdate = () => {
-      loadFaqs();
-    };
-    window.addEventListener('faq-update', handleFaqUpdate);
-    return () => {
-      window.removeEventListener('faq-update', handleFaqUpdate);
-    };
-  }, []);
 
   const toggleFaq = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
@@ -45,7 +20,7 @@ export function FaqSection() {
         </div>
 
         <div className="faq-grid" style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '15px' }}>
-          {faqsList.map((faq, index) => {
+          {faqs.map((faq, index) => {
             const isOpen = activeIndex === index;
             return (
               <div 

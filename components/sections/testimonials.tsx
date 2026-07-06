@@ -1,15 +1,7 @@
-'use client';
-import { useState, useEffect } from 'react';
 import type { Testimonial } from '@/lib/db';
 import { Star } from '../icons';
 
-export function TestimonialsSection() {
-  const [list, setList] = useState<Testimonial[]>([]);
-
-  useEffect(() => {
-    fetch('/api/testimonials').then(r => r.json()).then(setList);
-  }, []);
-
+export function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) {
   return (
     <section className="section testimonials-section" id="testimonials" style={{ background: '#fff', borderTop: '1px solid #eaeae5' }}>
       <div className="container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -27,7 +19,7 @@ export function TestimonialsSection() {
             marginTop: '20px' 
           }}
         >
-          {list.map((t) => (
+          {testimonials.map((t) => (
             <div 
               key={t.id} 
               style={{ 
@@ -42,7 +34,6 @@ export function TestimonialsSection() {
               }}
             >
               <div>
-                {/* Rating stars */}
                 <div style={{ display: 'flex', gap: '3px', color: '#ffb300', marginBottom: '15px' }}>
                   {Array.from({ length: t.rating }).map((_, i) => (
                     <Star key={i} fill="currentColor" style={{ width: '16px', height: '16px', stroke: 'none' }} />
