@@ -70,3 +70,10 @@ export const cmsSettings = pgTable("cms_settings", {
   customSubtitle: text("custom_subtitle").notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+export const adminLoginAttempts = pgTable("admin_login_attempts", {
+  ip: text("ip").primaryKey(),
+  count: integer("count").notNull(),
+  resetAt: timestamp("reset_at").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});

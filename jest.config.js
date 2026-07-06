@@ -10,6 +10,7 @@ const config = {
     '^@/(.*)$': '<rootDir>/$1',
   },
   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
+  watchman: false,
 };
 
 module.exports = createJestConfig(config);

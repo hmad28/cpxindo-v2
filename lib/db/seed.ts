@@ -9,31 +9,31 @@ const defaultSlides = [
     id: "slide-1",
     title: "BIKIN JERSEY TIM YANG KELIHATAN BEDA.",
     subtitle: "Studio jersey custom untuk tim, komunitas, dan brand yang butuh tampilan kuat, bahan nyaman, dan proses produksi yang jelas. CPX membantu tampil solid.",
-    image: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/cpx_welcome.png",
   },
   {
     id: "slide-2",
     title: "CPX VICTORY PREMIUM EDITION.",
     subtitle: "Material pilihan Dryfit Milano dengan pola zig-zag eksklusif, halus, adem, dan cepat menyerap keringat. Tersedia harga grosir.",
-    image: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/cpx_victory.png",
   },
   {
     id: "slide-3",
     title: "MADE FOR THOSE WHO NEVER SETTLE.",
     subtitle: "Kombinasi desain yang berani, material yang tepat, dan pengerjaan tanpa kompromi untuk tim Anda.",
-    image: "https://images.unsplash.com/photo-1529900748604-07564a03e7a6?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/cpx_garuda.png",
   },
   {
     id: "slide-4",
     title: "CUSTOM JERSEY UNTUK SETIAP OLAHRAGA.",
     subtitle: "Dari basket, badminton, futsal, hingga e-sport — semua bisa di-custom sesuai identitas tim kamu.",
-    image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/cpx_indo.png",
   },
   {
     id: "slide-5",
     title: "HARGA GROSIR, KUALITAS PREMIUM.",
     subtitle: "Minimal 6 pcs sudah dapat harga grosir. Semakin banyak, semakin hemat. Cocok untuk tim dan komunitas.",
-    image: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/cpx_inferno.png",
   },
 ];
 

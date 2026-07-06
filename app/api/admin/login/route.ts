@@ -1,27 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { createAdminSession } from '@/lib/admin-session';
-
-// Simple in-memory rate limiter
-const attempts = new Map<string, { count: number; resetAt: number }>();
-const MAX_ATTEMPTS = 5;
-const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = attempts.get(ip);
-  if (!entry || now > entry.resetAt) {
-    attempts.set(ip, { count: 1, resetAt: now + WINDOW_MS });
-    return false;
-  }
-  entry.count++;
-  return entry.count > MAX_ATTEMPTS;
-}
+import { getClientIp, isAdminLoginRateLimited, resetAdminLoginRateLimit } from '@/lib/admin-rate-limit';
 
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+  const ip = getClientIp(req.headers);
 
-  if (isRateLimited(ip)) {
+  if (await isAdminLoginRateLimited(ip)) {
     return NextResponse.json({ error: 'Terlalu banyak percobaan. Coba lagi dalam 15 menit.' }, { status: 429 });
   }
 
@@ -49,7 +34,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Reset rate limit on success
-  attempts.delete(ip);
+  await resetAdminLoginRateLimit(ip);
 
   const res = NextResponse.json({ success: true });
   res.cookies.set('cpx_admin_session', await createAdminSession(sessionSecret, 60 * 60 * 8), {

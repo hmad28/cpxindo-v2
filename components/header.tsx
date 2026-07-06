@@ -1,9 +1,12 @@
 'use client';
-import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { CircleUserRound, Heart, Menu, Search, ShoppingBag, X } from './icons';
+import { Heart, Menu, Search, ShoppingBag, X } from './icons';
 import { useCart } from '@/lib/cart-context';
 import { getStoredWishlist, CMSSettings } from '@/lib/db';
+import { CartDrawer } from './cart-drawer';
+import { WishlistDrawer } from './wishlist-drawer';
 
 const links = ['New Drops', 'Products', 'Custom Jersey', 'Teams', 'About Us'];
 
@@ -14,7 +17,11 @@ export function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const [wishlistCount, setWishlistCount] = useState(0);
   const [cms, setCms] = useState<CMSSettings | null>(null);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [wishlistOpen, setWishlistOpen] = useState(false);
   const { getTotalItems } = useCart();
+  const closeCart = useCallback(() => setCartOpen(false), []);
+  const closeWishlist = useCallback(() => setWishlistOpen(false), []);
 
   const updateWishlistCount = () => {
     const list = getStoredWishlist();
@@ -25,34 +32,32 @@ export function Header() {
     updateWishlistCount();
     fetch('/api/cms').then(r => r.json()).then(setCms);
 
-    // Listen to custom wishlist updates from Product Cards
     window.addEventListener('wishlist-update', updateWishlistCount);
 
-    // Listen to custom CMS updates
     const handleCmsUpdate = () => {
       fetch('/api/cms').then(r => r.json()).then(setCms);
     };
+    const handleCartOpen = () => setCartOpen(true);
     window.addEventListener('cms-update', handleCmsUpdate);
+    window.addEventListener('cart-open', handleCartOpen);
 
     return () => {
       window.removeEventListener('wishlist-update', updateWishlistCount);
       window.removeEventListener('cms-update', handleCmsUpdate);
+      window.removeEventListener('cart-open', handleCartOpen);
     };
   }, []);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      router.push(`/?search=${encodeURIComponent(searchQuery.trim())}#products`);
       setSearchOpen(false);
       setSearchQuery('');
     }
   };
 
   const shopName = cms?.shopName || 'CPX JERSEY';
-  const logoInitial = shopName.charAt(0);
-  const logoFirstWord = shopName.split(' ')[0];
-  const logoSubText = shopName.split(' ').slice(1).join(' ') || 'JERSEY';
 
   return (
     <>
@@ -62,85 +67,64 @@ export function Header() {
       </div>
 
       <header className="header" style={{ position: 'relative' }}>
-        <button 
-          className="icon-btn mobile-only" 
-          aria-label="Menu" 
+        <button
+          className="icon-btn mobile-only"
+          aria-label="Menu"
           onClick={() => setMenuOpen(true)}
         >
           <Menu />
         </button>
 
         <a className="logo" href="/" aria-label="CPX home">
-          <span className="logo-mark">{logoInitial}</span>
-          <span>{logoFirstWord}<small>{logoSubText}</small></span>
+          <Image
+            src="/images/logo/icon_cpx.jpeg"
+            alt="CPX Sport Wear Premium logo"
+            width={150}
+            height={46}
+            priority
+            className="brand-logo-image"
+          />
+          <span className="sr-only">{shopName}</span>
         </a>
 
-        {/* Desktop Navigation */}
         <nav>
           {links.map(x => (
-            <a 
-              key={x} 
-              href={x === 'Custom Jersey' ? '/#custom' : x === 'Products' || x === 'New Drops' ? '/products' : x === 'About Us' ? '/#story' : '/#teams'}
+            <a
+              key={x}
+              href={x === 'Custom Jersey' ? '/#custom' : x === 'Products' || x === 'New Drops' ? '/#products' : x === 'About Us' ? '/#story' : '/#teams'}
             >
               {x}
             </a>
           ))}
         </nav>
 
-        {/* Action Controls */}
         <div className="actions">
-          {/* Search Toggle */}
-          <button 
-            aria-label="Search" 
+          <button
+            aria-label="Search"
             onClick={() => setSearchOpen(!searchOpen)}
             style={{ color: searchOpen ? '#e3262e' : '#fff' }}
           >
             <Search />
           </button>
 
-          {/* Wishlist Button with Indicator Dot */}
-          <a 
-            href="/dashboard?tab=wishlist" 
-            aria-label="Wishlist" 
-            className="desktop-icon" 
-            style={{ position: 'relative', display: 'flex', alignItems: 'center' }}
+          <button
+            type="button"
+            aria-label="Open wishlist"
+            className="wishlist-button"
+            onClick={() => setWishlistOpen(true)}
           >
             <Heart />
-            {wishlistCount > 0 && (
-              <span 
-                style={{
-                  position: 'absolute',
-                  top: '-4px',
-                  right: '-4px',
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  background: '#e3262e',
-                  border: '1px solid #0c0c0d'
-                }}
-              />
-            )}
-          </a>
+            {wishlistCount > 0 && <b>{wishlistCount}</b>}
+          </button>
 
-          {/* Account Button */}
-          <a
-            href="/admin"
-            aria-label="Admin Panel"
-            className="desktop-icon"
-          >
-            <CircleUserRound />
-          </a>
-
-          {/* Bag Cart Button */}
-          <a href="/cart" className="bag" aria-label="Cart">
+          <button type="button" className="bag" aria-label="Open cart" onClick={() => setCartOpen(true)}>
             <ShoppingBag />
             <b>{getTotalItems()}</b>
-          </a>
+          </button>
         </div>
 
-        {/* Expandable Search Bar Overlay */}
         {searchOpen && (
-          <div 
+          <div
             style={{
               position: 'absolute',
               top: '100%',
@@ -172,9 +156,9 @@ export function Header() {
                   font: '14px var(--font-inter)'
                 }}
               />
-              <button 
-                type="submit" 
-                className="btn red" 
+              <button
+                type="submit"
+                className="btn red"
                 style={{ height: '44px', padding: '0 25px' }}
               >
                 CARI
@@ -184,25 +168,27 @@ export function Header() {
         )}
       </header>
 
-      {/* Mobile Drawer Menu */}
       {menuOpen && (
         <div className="mobile-menu">
-          <button onClick={() => setMenuOpen(false)}>
+          <button className="mobile-menu-close" onClick={() => setMenuOpen(false)} aria-label="Close menu">
             <X />
           </button>
           {links.map(x => (
-            <a 
-              href={x === 'Custom Jersey' ? '/#custom' : x === 'Products' || x === 'New Drops' ? '/products' : x === 'About Us' ? '/#story' : '/#teams'} 
-              onClick={() => setMenuOpen(false)} 
+            <a
+              href={x === 'Custom Jersey' ? '/#custom' : x === 'Products' || x === 'New Drops' ? '/#products' : x === 'About Us' ? '/#story' : '/#teams'}
+              onClick={() => setMenuOpen(false)}
               key={x}
             >
               {x}
             </a>
           ))}
-          <a href="/dashboard" onClick={() => setMenuOpen(false)}>Dashboard</a>
-          <a href="/cart" onClick={() => setMenuOpen(false)}>Shopping Cart ({getTotalItems()})</a>
+          <button className="mobile-menu-link" type="button" onClick={() => { setMenuOpen(false); setWishlistOpen(true); }}>Wishlist ({wishlistCount})</button>
+          <button className="mobile-menu-link" type="button" onClick={() => { setMenuOpen(false); setCartOpen(true); }}>Shopping Cart ({getTotalItems()})</button>
         </div>
       )}
+
+      <WishlistDrawer open={wishlistOpen} onClose={closeWishlist} />
+      <CartDrawer open={cartOpen} onClose={closeCart} />
     </>
   );
 }

@@ -183,9 +183,9 @@ export async function getStoredSlides(): Promise<HeroSlide[]> {
   const rows = await db.select().from(heroSlidesTable);
   if (rows.length === 0) {
     return [
-      { id: "slide-1", title: "BIKIN JERSEY TIM YANG KELIHATAN BEDA.", subtitle: "Studio jersey custom untuk tim, komunitas, dan brand yang butuh tampilan kuat, bahan nyaman, dan proses produksi yang jelas. CPX membantu tampil solid.", image: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=1600&q=80" },
-      { id: "slide-2", title: "CPX VICTORY PREMIUM EDITION.", subtitle: "Material pilihan Dryfit Milano dengan pola zig-zag eksklusif, halus, adem, dan cepat menyerap keringat. Tersedia harga grosir.", image: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1600&q=80" },
-      { id: "slide-3", title: "MADE FOR THOSE WHO NEVER SETTLE.", subtitle: "Kombinasi desain yang berani, material yang tepat, dan pengerjaan tanpa kompromi untuk tim Anda.", image: "https://images.unsplash.com/photo-1529900748604-07564a03e7a6?auto=format&fit=crop&w=1600&q=80" },
+      { id: "slide-1", title: "BIKIN JERSEY TIM YANG KELIHATAN BEDA.", subtitle: "Studio jersey custom untuk tim, komunitas, dan brand yang butuh tampilan kuat, bahan nyaman, dan proses produksi yang jelas. CPX membantu tampil solid.", image: "/images/cpx_welcome.png" },
+      { id: "slide-2", title: "CPX VICTORY PREMIUM EDITION.", subtitle: "Material pilihan Dryfit Milano dengan pola zig-zag eksklusif, halus, adem, dan cepat menyerap keringat. Tersedia harga grosir.", image: "/images/cpx_victory.png" },
+      { id: "slide-3", title: "MADE FOR THOSE WHO NEVER SETTLE.", subtitle: "Kombinasi desain yang berani, material yang tepat, dan pengerjaan tanpa kompromi untuk tim Anda.", image: "/images/cpx_garuda.png" },
     ];
   }
   return rows.map((r) => ({ id: r.id, title: r.title, subtitle: r.subtitle, image: r.image }));

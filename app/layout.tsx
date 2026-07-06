@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter, Oswald } from 'next/font/google';
 import { headers } from 'next/headers';
 import './globals.css';
@@ -10,9 +10,19 @@ import { ErrorBoundary } from '@/components/error-boundary';
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const oswald = Oswald({ subsets: ['latin'], variable: '--font-oswald' });
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
   title: 'CPX Jersey — Bikin Jersey Tim Yang Kelihatan Beda',
   description: 'Studio jersey custom untuk tim, komunitas, dan brand yang butuh tampilan kuat, bahan nyaman, dan proses produksi yang jelas.',
+  icons: {
+    icon: '/images/logo/cpx_logo_01.png',
+    shortcut: '/images/logo/cpx_logo_01.png',
+    apple: '/images/logo/cpx_logo_01.png',
+  },
   openGraph: {
     title: 'CPX Jersey — Bikin Jersey Tim Yang Kelihatan Beda',
     description: 'Studio jersey custom untuk tim, komunitas, dan brand yang butuh tampilan kuat, bahan nyaman, dan proses produksi yang jelas.',

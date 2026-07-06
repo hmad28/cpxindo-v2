@@ -49,6 +49,7 @@ export function ProductCard({ product }: { product: Product }) {
     });
 
     setAddedNotify(true);
+    window.dispatchEvent(new Event('cart-open'));
     setTimeout(() => setAddedNotify(false), 2000);
   };
 
@@ -78,12 +79,12 @@ export function ProductCard({ product }: { product: Product }) {
           </button>
           <Image src={product.image} alt={product.name} fill sizes="(max-width: 700px) 85vw, 25vw" style={{ objectFit: 'cover' }} />
         </div>
-        <div className="product-meta" style={{ flexGrow: 1, padding: '15px 0' }}>
+        <div className="product-meta" style={{ flexGrow: 1, padding: '15px 0', display: 'block' }}>
           <div>
             <p style={{ margin: '0 0 5px 0', fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{product.type}</p>
             <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '700', cursor: 'pointer' }} onClick={() => setShowModal(true)}>{product.name}</h3>
           </div>
-          <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div className="product-price-row" style={{ marginTop: '9px', display: 'flex', alignItems: 'baseline', gap: '10px', flexWrap: 'wrap' }}>
             <strong style={{ fontSize: '16px', color: '#e3262e' }}>{formattedPrice}</strong>
             {product.discountPrice && (
               <span style={{ fontSize: '13px', color: '#aaa', textDecoration: 'line-through' }}>{formattedOriginalPrice}</span>

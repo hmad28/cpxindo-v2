@@ -12,7 +12,6 @@ export function Hero() {
     fetch('/api/slides').then(r => r.json()).then(setSlides);
   }, []);
 
-  // Autoplay slider every 6 seconds
   useEffect(() => {
     if (slides.length <= 1) return;
     const interval = setInterval(() => {
@@ -39,60 +38,31 @@ export function Hero() {
 
   return (
     <section className="hero">
-      
-      {/* Slides Container */}
       {slides.map((slide, idx) => {
         const isActive = activeIndex === idx;
         return (
-          <div
-            key={slide.id}
-            style={{
-              position: 'absolute',
-              inset: 0,
-              opacity: isActive ? 1 : 0,
-              visibility: isActive ? 'visible' : 'hidden',
-              transition: 'opacity 1s ease-in-out, visibility 1s ease-in-out',
-              zIndex: isActive ? 1 : 0
-            }}
-          >
-            {/* Background Image */}
+          <div key={slide.id} className={`hero-slide ${isActive ? 'active' : ''}`}>
             <Image
               src={slide.image}
               alt={slide.title}
               fill
               priority={idx === 0}
               sizes="100vw"
-              style={{ objectFit: 'cover', objectPosition: 'center 38%', filter: 'grayscale(25%)' }}
+              className="hero-slide-image"
             />
-            
-            {/* Gradient Overlays */}
             <div className="hero-overlay" />
-
-            {/* Content Box */}
             <div className="hero-content">
               <div className="eyebrow">
                 <span />
                 CPX SPORTSWEAR BANDUNG
               </div>
-              <h1>
-                {slide.title.split(' ').map((word, wIdx) => {
-                  const isEmphasized = word.startsWith('_') || word.includes('BEDA') || word.includes('VICTORY') || word.includes('SETTLE');
-                  const cleanWord = word.replace(/_/g, '');
-                  return (
-                    <span key={wIdx} style={{ marginRight: '10px', display: 'inline-block' }}>
-                      {isEmphasized ? <em style={{ color: '#e3262e', fontStyle: 'italic' }}>{cleanWord}</em> : cleanWord}
-                    </span>
-                  );
-                })}
-              </h1>
-              <p>
-                {slide.subtitle}
-              </p>
+              <h1>{slide.title}</h1>
+              <p>{slide.subtitle}</p>
               <div className="hero-buttons">
                 <a href="/#custom" className="btn red" style={{ textDecoration: 'none' }}>
                   CUSTOM YOUR JERSEY <ArrowRight />
                 </a>
-                <a href="/products" className="btn glass" style={{ textDecoration: 'none' }}>
+                <a href="/#products" className="btn glass" style={{ textDecoration: 'none' }}>
                   EXPLORE PRODUCTS <ArrowRight />
                 </a>
               </div>
@@ -101,81 +71,31 @@ export function Hero() {
         );
       })}
 
-      {/* Navigation Arrow Controls */}
       {slides.length > 1 && (
-        <>
-          <button
-            onClick={handlePrev}
-            style={{
-              position: 'absolute',
-              left: '3vw',
-              bottom: '50px',
-              zIndex: 4,
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: '#fff',
-              width: '45px',
-              height: '45px',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
-            onMouseEnter={e => e.currentTarget.style.background = '#e3262e'}
-            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-          >
-            <ArrowLeft style={{ width: '18px' }} />
-          </button>
-          <button
-            onClick={handleNext}
-            style={{
-              position: 'absolute',
-              left: 'calc(3vw + 60px)',
-              bottom: '50px',
-              zIndex: 4,
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: '#fff',
-              width: '45px',
-              height: '45px',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
-            onMouseEnter={e => e.currentTarget.style.background = '#e3262e'}
-            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-          >
-            <ArrowRight style={{ width: '18px' }} />
-          </button>
-        </>
-      )}
-
-      {/* Slider Carousel Indicator Dots */}
-      {slides.length > 1 && (
-        <div style={{ position: 'absolute', right: '4vw', bottom: '50px', zIndex: 4, display: 'flex', gap: '8px' }}>
-          {slides.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setActiveIndex(idx)}
-              style={{
-                width: '30px',
-                height: '3px',
-                border: 'none',
-                background: activeIndex === idx ? '#e3262e' : 'rgba(255,255,255,0.2)',
-                cursor: 'pointer',
-                transition: 'background 0.3s'
-              }}
-              aria-label={`Go to slide ${idx + 1}`}
-            />
-          ))}
+        <div className="hero-controls">
+          <div className="hero-arrows">
+            <button onClick={handlePrev} aria-label="Previous slide">
+              <ArrowLeft />
+            </button>
+            <button onClick={handleNext} aria-label="Next slide">
+              <ArrowRight />
+            </button>
+          </div>
+          <div className="hero-dots" aria-label="Hero slides">
+            {slides.map((_, idx) => (
+              <button
+                key={idx}
+                className={activeIndex === idx ? 'active' : ''}
+                onClick={() => setActiveIndex(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
+          </div>
+          <span className="hero-counter">
+            {String(activeIndex + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
+          </span>
         </div>
       )}
-
     </section>
   );
 }

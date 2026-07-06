@@ -106,6 +106,7 @@ describe('getStoredSlides / saveSlides', () => {
     const slides = await getStoredSlides();
     expect(slides.length).toBeGreaterThan(0);
     expect(slides[0]).toHaveProperty('title');
+    expect(slides.every((slide) => slide.image.startsWith('/images/'))).toBe(true);
   });
 
   it('returns mapped slides from DB', async () => {

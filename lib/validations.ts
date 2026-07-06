@@ -1,6 +1,34 @@
 import { z } from 'zod';
 
-const ImageRefSchema = z.string().url().or(z.string().regex(/^\/images\/[A-Za-z0-9._~:/?#[\]@!$&'()*+,;=%-]+$/));
+const LOCAL_IMAGE_PATTERN = /^\/images\/[A-Za-z0-9._~:/?#[\]@!$&'()*+,;=%-]+$/;
+const ALLOWED_REMOTE_IMAGE_HOSTS = new Set(["images.unsplash.com"]);
+
+function isHttpsUrl(value: string) {
+  try {
+    return new URL(value).protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function isAllowedImageRef(value: string) {
+  if (LOCAL_IMAGE_PATTERN.test(value)) return true;
+
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && ALLOWED_REMOTE_IMAGE_HOSTS.has(url.hostname);
+  } catch {
+    return false;
+  }
+}
+
+const ImageRefSchema = z.string().refine(isAllowedImageRef, {
+  message: "Image must be a local /images path or an allowed HTTPS image host",
+});
+
+const PublicHttpsUrlSchema = z.string().refine(isHttpsUrl, {
+  message: "URL must use https",
+});
 
 export const ProductSchema = z.object({
   id: z.string().min(1),
@@ -47,12 +75,12 @@ export const CMSSettingsSchema = z.object({
   shopName: z.string().min(1).max(100),
   slogan: z.string().min(1).max(200),
   address: z.string().min(1).max(1000),
-  mapsUrl: z.string().url().or(z.literal('')),
-  instagramUrl: z.string().url().or(z.literal('')),
-  tiktokUrl: z.string().url().or(z.literal('')),
-  shopeeUrl: z.string().url().or(z.literal('')),
-  tokopediaUrl: z.string().url().or(z.literal('')),
-  lazadaUrl: z.string().url().or(z.literal('')),
+  mapsUrl: PublicHttpsUrlSchema.or(z.literal('')),
+  instagramUrl: PublicHttpsUrlSchema.or(z.literal('')),
+  tiktokUrl: PublicHttpsUrlSchema.or(z.literal('')),
+  shopeeUrl: PublicHttpsUrlSchema.or(z.literal('')),
+  tokopediaUrl: PublicHttpsUrlSchema.or(z.literal('')),
+  lazadaUrl: PublicHttpsUrlSchema.or(z.literal('')),
   aboutTitle: z.string().min(1).max(200),
   aboutDesc1: z.string().min(1).max(2000),
   aboutDesc2: z.string().min(1).max(2000),

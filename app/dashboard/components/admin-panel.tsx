@@ -293,7 +293,7 @@ export function AdminPanel() {
     setSId(`slide-${Date.now()}`);
     setSTitle('');
     setSSubtitle('');
-    setSImage('https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=1600&q=80');
+    setSImage('/images/cpx_welcome.png');
     setShowSlideForm(true);
   };
 

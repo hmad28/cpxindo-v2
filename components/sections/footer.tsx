@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { Instagram, Tiktok } from '../icons';
 import type { CMSSettings } from '@/lib/db';
@@ -24,8 +25,14 @@ export function Footer() {
       <div className="footer-top">
         <div className="footer-brand-col">
           <a className="logo" href="#top">
-            <span className="logo-mark">C</span>
-            <span>{shopName.split(' ')[0]}<small>{shopName.split(' ').slice(1).join(' ') || 'JERSEY'}</small></span>
+            <Image
+              src="/images/logo/icon_cpx.jpeg"
+              alt="CPX Sport Wear Premium logo"
+              width={190}
+              height={58}
+              className="footer-logo-image"
+            />
+            <span className="sr-only">{shopName}</span>
           </a>
           <p className="footer-slogan">
             {slogan}<br />
@@ -42,10 +49,10 @@ export function Footer() {
         </div>
         <div>
           <b>SHOP</b>
-          <a href="/products">New Drops</a>
-          <a href="/products">Jersey</a>
-          <a href="/products">Training</a>
-          <a href="/products">Accessories</a>
+          <a href="/#products">New Drops</a>
+          <a href="/#products">Jersey</a>
+          <a href="/#products">Training</a>
+          <a href="/#products">Accessories</a>
         </div>
         <div>
           <b>CUSTOM</b>
@@ -63,8 +70,8 @@ export function Footer() {
         <div>
           <b>SUPPORT</b>
           <a href="/#faq">FAQ</a>
-          <a href="/dashboard">Track Order</a>
-          <a href="/dashboard">Contact Support</a>
+          <a href="/#faq">Track Order</a>
+          <a href="/#faq">Contact Support</a>
         </div>
       </div>
       <div className="footer-bottom" style={{ borderTop: '1px solid #222', paddingTop: '20px', marginTop: '40px', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '15px' }}>
@@ -75,3 +82,4 @@ export function Footer() {
     </footer>
   );
 }
+

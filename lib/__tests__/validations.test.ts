@@ -74,6 +74,24 @@ describe('ProductSchema', () => {
     expect(result.success).toBe(false);
   });
 
+  it('rejects remote image hosts not configured for Next image rendering', () => {
+    const result = ProductSchema.safeParse({
+      ...validProduct,
+      image: 'https://example.com/photo.jpg',
+      images: ['https://example.com/photo.jpg'],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts local product images', () => {
+    const result = ProductSchema.safeParse({
+      ...validProduct,
+      image: '/images/products/jersey.jpg',
+      images: ['/images/products/jersey.jpg'],
+    });
+    expect(result.success).toBe(true);
+  });
+
   it('rejects missing required fields', () => {
     const result = ProductSchema.safeParse({ id: 'prod-1' });
     expect(result.success).toBe(false);
@@ -201,8 +219,23 @@ describe('CMSSettingsSchema', () => {
     expect(result.success).toBe(false);
   });
 
+  it('rejects javascript URLs in public links', () => {
+    const result = CMSSettingsSchema.safeParse({ ...validCMS, instagramUrl: 'javascript:alert(1)' });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects non-HTTPS public links', () => {
+    const result = CMSSettingsSchema.safeParse({ ...validCMS, tokopediaUrl: 'http://www.tokopedia.com/abaholot' });
+    expect(result.success).toBe(false);
+  });
+
   it('rejects invalid customImage URL', () => {
     const result = CMSSettingsSchema.safeParse({ ...validCMS, customImage: 'bad' });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects customImage hosts not configured for Next image rendering', () => {
+    const result = CMSSettingsSchema.safeParse({ ...validCMS, customImage: 'https://example.com/photo.jpg' });
     expect(result.success).toBe(false);
   });
 });

@@ -1,33 +1,48 @@
 .hero {
   height: calc(100vh - 104px);
-  min-height: 610px;
+  min-height: 640px;
   position: relative;
   color: #fff;
   overflow: hidden;
+  background: #050505;
 }
-.hero > img {
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.7s ease, visibility 0.7s ease;
+  z-index: 0;
+}
+.hero-slide.active {
+  opacity: 1;
+  visibility: visible;
+  z-index: 1;
+}
+.hero-slide-image {
   object-fit: cover;
-  object-position: center 38%;
-  filter: grayscale(30%);
+  object-position: center center;
+  filter: saturate(0.94) contrast(1.05);
 }
 .hero-overlay {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.89) 0%, rgba(0, 0, 0, 0.48) 48%, rgba(0, 0, 0, 0.1) 75%),
-    linear-gradient(0deg, rgba(0, 0, 0, 0.55), transparent 45%);
+    linear-gradient(90deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.66) 36%, rgba(0, 0, 0, 0.18) 72%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.78) 0%, transparent 42%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, transparent 24%);
 }
 .hero-content {
   position: absolute;
-  left: 8vw;
-  top: 47%;
+  left: clamp(28px, 6vw, 86px);
+  top: 50%;
   transform: translateY(-50%);
   z-index: 3;
   color: #fff;
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  max-width: 650px;
+  gap: 14px;
+  max-width: min(610px, 54vw);
 }
 .eyebrow, .kicker {
   font-size: 10px;
@@ -38,6 +53,8 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
 }
 .eyebrow span {
   height: 2px;
@@ -45,8 +62,8 @@
   background: #e3262e;
 }
 .hero h1, .section h2, .custom h2, .newsletter h2 {
-  font: 700 clamp(62px, 8.1vw, 124px)/0.85 var(--font-oswald);
-  letter-spacing: -4px;
+  font: 700 clamp(54px, 6.4vw, 92px)/0.88 var(--font-oswald);
+  letter-spacing: -2.5px;
   margin: 25px 0;
 }
 .hero h1 em, .section h2 em {
@@ -54,14 +71,17 @@
   color: #e3262e;
 }
 .hero p {
+  max-width: 560px;
+  margin: 0;
   font-size: 14px;
-  line-height: 1.7;
-  color: #ddd;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.86);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
 }
 .hero-buttons {
   display: flex;
   gap: 10px;
-  margin-top: 30px;
+  margin-top: 20px;
 }
 .btn {
   height: 48px;
@@ -78,8 +98,67 @@
 .btn.red { background: #df2028; color: #fff; }
 .btn.glass {
   border: 1px solid rgba(255, 255, 255, 0.6);
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.22);
   color: #fff;
+  backdrop-filter: blur(8px);
+}
+.hero-controls {
+  position: absolute;
+  left: clamp(28px, 6vw, 86px);
+  right: clamp(28px, 5vw, 72px);
+  bottom: 34px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.hero-arrows {
+  display: flex;
+  gap: 10px;
+}
+.hero-arrows button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+.hero-arrows button:hover {
+  background: #e3262e;
+  border-color: #e3262e;
+  transform: translateY(-2px);
+}
+.hero-arrows svg {
+  width: 17px;
+}
+.hero-dots {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.hero-dots button {
+  width: 36px;
+  height: 3px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.24);
+  transition: background 0.2s ease, width 0.2s ease;
+}
+.hero-dots button.active {
+  width: 54px;
+  background: #e3262e;
+}
+.hero-counter {
+  min-width: 58px;
+  text-align: right;
+  font: 800 10px var(--font-inter);
+  letter-spacing: 1.2px;
+  color: rgba(255, 255, 255, 0.76);
 }
 .hero-index {
   position: absolute;

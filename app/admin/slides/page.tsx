@@ -29,7 +29,7 @@ export default function AdminSlidesPage() {
     setEditing(null);
     setTitle('');
     setSubtitle('');
-    setImage('https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=1600&q=80');
+    setImage('/images/cpx_welcome.png');
     setShowForm(true);
   };
 
