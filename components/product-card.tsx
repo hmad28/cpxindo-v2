@@ -104,9 +104,7 @@ export function ProductCard({ product }: { product: Product }) {
 
       {/* Lightbox / Product Detail Modal */}
       {showModal && (
-        <div 
-          style={{
-            position: 'fixed',
+        <div className="product-modal-root" style={{ position: 'fixed',
             inset: 0,
             zIndex: 1000,
             display: 'flex',
@@ -119,9 +117,7 @@ export function ProductCard({ product }: { product: Product }) {
           }}
           onClick={() => setShowModal(false)}
         >
-          <div 
-            style={{
-              background: '#fff',
+          <div className="product-modal-panel" style={{ background: '#fff',
               width: '100%',
               maxWidth: '1050px',
               borderRadius: '12px',
@@ -161,8 +157,8 @@ export function ProductCard({ product }: { product: Product }) {
             </button>
 
             {/* Left Column: Image Viewer */}
-            <div style={{ background: '#f9f9f9', padding: '40px', display: 'flex', flexDirection: 'column', gap: '20px', justifyContent: 'center' }}>
-              <div style={{ position: 'relative', width: '100%', height: '420px', borderRadius: '8px', overflow: 'hidden' }}>
+            <div className="product-modal-media" style={{ background: '#f9f9f9', padding: '40px', display: 'flex', flexDirection: 'column', gap: '20px', justifyContent: 'center' }}>
+              <div className="product-modal-image" style={{ position: 'relative', width: '100%', height: '420px', borderRadius: '8px', overflow: 'hidden' }}>
                 <Image 
                   src={product.images[activeImgIndex] || product.image} 
                   alt={product.name} 
@@ -248,7 +244,7 @@ export function ProductCard({ product }: { product: Product }) {
             </div>
 
             {/* Right Column: Details & Custom Settings */}
-            <div style={{ padding: '40px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div className="product-modal-details" style={{ padding: '40px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div>
                 <span className="kicker" style={{ color: '#e3262e', marginBottom: '10px', display: 'inline-block' }}>{product.type}</span>
                 <h2 style={{ font: '700 32px/1.1 var(--font-oswald)', letterSpacing: '-1px', margin: '0 0 15px 0' }}>{product.name}</h2>
@@ -327,7 +323,7 @@ export function ProductCard({ product }: { product: Product }) {
               </div>
 
               {/* Add to Cart Actions */}
-              <div style={{ borderTop: '1px solid #eee', paddingTop: '20px', display: 'flex', gap: '15px' }}>
+              <div className="product-modal-actions" style={{ borderTop: '1px solid #eee', paddingTop: '20px', display: 'flex', gap: '15px' }}>
                 <button 
                   onClick={handleAddToCart}
                   style={{
@@ -368,3 +364,4 @@ export function ProductCard({ product }: { product: Product }) {
     </>
   );
 }
+

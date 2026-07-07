@@ -16,7 +16,7 @@ export function Home({ data }: { data: StorefrontData }) {
     <main id="top">
       <Hero initialSlides={data.slides} />
       <Marquee />
-      <Suspense fallback={<section className="section products" id="products" />}>
+      <Suspense fallback={<section className="section products" />}>
         <Products initialProducts={data.products} />
       </Suspense>
       <CustomSection cms={data.cms} />
@@ -29,3 +29,4 @@ export function Home({ data }: { data: StorefrontData }) {
     </main>
   );
 }
+
