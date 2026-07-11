@@ -1,29 +1,45 @@
 'use client';
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { Package, Share2, Star, Check, FileText, Phone, LayoutDashboard } from '@/components/icons';
 
-interface Counts {
-  products: number;
-  slides: number;
-  testimonials: number;
-  faqs: number;
+import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import {
+  ArcElement,
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
+  Tooltip,
+} from 'chart.js';
+import { Bar, Doughnut } from 'react-chartjs-2';
+import { ArrowRight, Check, Package, Share2, Star } from '@/components/icons';
+import type { Product } from '@/lib/data';
+
+ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
+
+type Testimonial = { id: string; rating: number };
+
+interface DashboardData {
+  products: Product[];
+  slides: unknown[];
+  testimonials: Testimonial[];
+  faqs: unknown[];
 }
 
-const cards = [
-  { key: 'products', label: 'Katalog Produk', href: '/admin/products', icon: Package, color: '#e3262e' },
-  { key: 'slides', label: 'Banner Slider', href: '/admin/slides', icon: Share2, color: '#2563eb' },
-  { key: 'testimonials', label: 'Testimonial', href: '/admin/testimonials', icon: Star, color: '#f59e0b' },
-  { key: 'faqs', label: 'FAQ Manager', href: '/admin/faqs', icon: Check, color: '#10b981' },
+const emptyData: DashboardData = { products: [], slides: [], testimonials: [], faqs: [] };
+
+const quickCards = [
+  { key: 'products', label: 'Produk aktif', href: '/admin/products', icon: Package, tone: 'red' },
+  { key: 'slides', label: 'Banner tayang', href: '/admin/slides', icon: Share2, tone: 'blue' },
+  { key: 'testimonials', label: 'Testimonial', href: '/admin/testimonials', icon: Star, tone: 'amber' },
+  { key: 'faqs', label: 'FAQ terbit', href: '/admin/faqs', icon: Check, tone: 'green' },
 ] as const;
 
-const links = [
-  { label: 'CMS Settings', href: '/admin/cms', icon: FileText },
-  { label: 'WhatsApp', href: '/admin/whatsapp', icon: Phone },
-];
+const chartColors = ['#e3262e', '#171717', '#f0a129', '#315c8c', '#8f9389'];
 
 export default function AdminOverviewPage() {
-  const [counts, setCounts] = useState<Counts>({ products: 0, slides: 0, testimonials: 0, faqs: 0 });
+  const [data, setData] = useState<DashboardData>(emptyData);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
@@ -31,82 +47,152 @@ export default function AdminOverviewPage() {
       fetch('/api/slides').then(r => r.json()),
       fetch('/api/testimonials').then(r => r.json()),
       fetch('/api/faqs').then(r => r.json()),
-    ]).then(([products, slides, testimonials, faqs]) => {
-      setCounts({
-        products: Array.isArray(products) ? products.length : 0,
-        slides: Array.isArray(slides) ? slides.length : 0,
-        testimonials: Array.isArray(testimonials) ? testimonials.length : 0,
-        faqs: Array.isArray(faqs) ? faqs.length : 0,
-      });
-    });
+    ])
+      .then(([products, slides, testimonials, faqs]) => {
+        setData({
+          products: Array.isArray(products) ? products : [],
+          slides: Array.isArray(slides) ? slides : [],
+          testimonials: Array.isArray(testimonials) ? testimonials : [],
+          faqs: Array.isArray(faqs) ? faqs : [],
+        });
+      })
+      .finally(() => setLoading(false));
   }, []);
 
+  const counts = {
+    products: data.products.length,
+    slides: data.slides.length,
+    testimonials: data.testimonials.length,
+    faqs: data.faqs.length,
+  };
+
+  const customCount = data.products.filter(product => product.isCustom).length;
+  const discountedCount = data.products.filter(product => product.discountPrice).length;
+  const averageRating = data.testimonials.length
+    ? data.testimonials.reduce((sum, item) => sum + (item.rating || 0), 0) / data.testimonials.length
+    : 0;
+
+  const categoryChart = useMemo(() => {
+    const categories = data.products.reduce<Record<string, number>>((result, product) => {
+      result[product.type || 'Lainnya'] = (result[product.type || 'Lainnya'] || 0) + 1;
+      return result;
+    }, {});
+    const sorted = Object.entries(categories).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    return {
+      labels: sorted.map(([label]) => label),
+      datasets: [{ data: sorted.map(([, value]) => value), backgroundColor: chartColors, borderWidth: 0 }],
+    };
+  }, [data.products]);
+
+  const contentChart = {
+    labels: ['Produk', 'Banner', 'Testimonial', 'FAQ'],
+    datasets: [{
+      label: 'Jumlah konten',
+      data: [counts.products, counts.slides, counts.testimonials, counts.faqs],
+      backgroundColor: ['#e3262e', '#315c8c', '#f0a129', '#26735b'],
+      borderRadius: 4,
+      borderSkipped: false,
+      barThickness: 24,
+    }],
+  };
+
+  const recentProducts = [...data.products].slice(-4).reverse();
+
   return (
-    <div>
-      <div style={{ marginBottom: '32px' }}>
-        <h1 style={{ font: '700 24px var(--font-oswald)', textTransform: 'uppercase', letterSpacing: '-0.5px', margin: 0 }}>
-          <LayoutDashboard style={{ width: '22px', verticalAlign: 'middle', marginRight: '10px', color: '#e3262e' }} />
-          Ringkasan
-        </h1>
-        <p style={{ color: '#888', fontSize: '13px', margin: '6px 0 0' }}>Overview data CPX Indo</p>
-      </div>
+    <div className="admin-overview">
+      <header className="admin-overview__header">
+        <div>
+          <p className="admin-eyebrow">CPX / CONTROL ROOM</p>
+          <h1>Ringkasan operasional</h1>
+          <p className="admin-overview__intro">Pantau katalog dan konten toko dari satu tampilan.</p>
+        </div>
+        <div className="admin-live"><span /> Data terhubung</div>
+      </header>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px', marginBottom: '32px' }}>
-        {cards.map(c => {
-          const Icon = c.icon;
+      <section className="admin-metrics" aria-label="Ringkasan data">
+        {quickCards.map(card => {
+          const Icon = card.icon;
           return (
-            <Link key={c.key} href={c.href} style={{ textDecoration: 'none' }}>
-              <div style={{
-                background: '#fff',
-                border: '1px solid #e1e0db',
-                borderRadius: '10px',
-                padding: '24px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px',
-                transition: 'box-shadow 0.2s, transform 0.2s',
-                cursor: 'pointer',
-              }}
-                onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.06)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none'; }}
-              >
-                <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: `${c.color}12`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: c.color }}>
-                  <Icon style={{ width: '18px' }} />
-                </div>
-                <span style={{ font: '700 28px var(--font-oswald)', color: '#151515' }}>{counts[c.key]}</span>
-                <span style={{ font: '600 12px var(--font-inter)', color: '#888', textTransform: 'uppercase', letterSpacing: '0.8px' }}>{c.label}</span>
-              </div>
+            <Link className={`admin-metric admin-metric--${card.tone}`} href={card.href} key={card.key}>
+              <span className="admin-metric__icon"><Icon aria-hidden="true" /></span>
+              <span className="admin-metric__value">{loading ? '—' : counts[card.key]}</span>
+              <span className="admin-metric__label">{card.label}</span>
+              <ArrowRight className="admin-metric__arrow" aria-hidden="true" />
             </Link>
           );
         })}
-      </div>
+      </section>
 
-      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-        {links.map(l => {
-          const Icon = l.icon;
-          return (
-            <Link key={l.href} href={l.href} style={{ textDecoration: 'none' }}>
-              <div style={{
-                background: '#fff',
-                border: '1px solid #e1e0db',
-                borderRadius: '8px',
-                padding: '14px 20px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                font: '700 13px var(--font-inter)',
-                color: '#444',
-                transition: 'all 0.2s',
-              }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#e3262e'; e.currentTarget.style.color = '#e3262e'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = '#e1e0db'; e.currentTarget.style.color = '#444'; }}
-              >
-                <Icon style={{ width: '16px' }} /> {l.label}
+      <section className="admin-chart-grid">
+        <article className="admin-panel admin-panel--wide">
+          <div className="admin-panel__head">
+            <div><p>Komposisi konten</p><h2>Volume per modul</h2></div>
+            <span>Live API</span>
+          </div>
+          <div className="admin-chart admin-chart--bar">
+            <Bar data={contentChart} options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false }, tooltip: { displayColors: false } },
+              scales: {
+                x: { grid: { display: false }, ticks: { color: '#72726d', font: { size: 11, weight: 600 } }, border: { display: false } },
+                y: { beginAtZero: true, ticks: { precision: 0, color: '#94948e' }, grid: { color: '#ebe9e2' }, border: { display: false } },
+              },
+            }} />
+          </div>
+        </article>
+
+        <article className="admin-panel">
+          <div className="admin-panel__head">
+            <div><p>Katalog</p><h2>5 tipe teratas</h2></div>
+          </div>
+          <div className="admin-doughnut-wrap">
+            <div className="admin-chart admin-chart--doughnut">
+              <Doughnut data={categoryChart} options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '72%',
+                plugins: { legend: { display: false }, tooltip: { displayColors: false } },
+              }} />
+              <div className="admin-chart-total"><strong>{counts.products}</strong><span>produk</span></div>
+            </div>
+            <div className="admin-chart-legend">
+              {categoryChart.labels.map((label, index) => (
+                <div key={label}><i style={{ backgroundColor: chartColors[index] }} /><span>{label}</span><b>{categoryChart.datasets[0].data[index]}</b></div>
+              ))}
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section className="admin-lower-grid">
+        <article className="admin-panel">
+          <div className="admin-panel__head">
+            <div><p>Update terbaru</p><h2>Produk terakhir</h2></div>
+            <Link href="/admin/products">Kelola <ArrowRight /></Link>
+          </div>
+          <div className="admin-product-list">
+            {recentProducts.map(product => (
+              <div className="admin-product-row" key={product.id}>
+                <img src={product.image} alt="" />
+                <div><strong>{product.name}</strong><span>{product.type}</span></div>
+                <b>Rp {(product.discountPrice || product.price).toLocaleString('id-ID')}</b>
               </div>
-            </Link>
-          );
-        })}
-      </div>
+            ))}
+            {!loading && recentProducts.length === 0 && <p className="admin-empty">Belum ada produk.</p>}
+          </div>
+        </article>
+
+        <article className="admin-panel admin-snapshot">
+          <div className="admin-panel__head"><div><p>Kondisi katalog</p><h2>Snapshot</h2></div></div>
+          <dl>
+            <div><dt>Produk custom</dt><dd>{customCount}</dd></div>
+            <div><dt>Harga promo</dt><dd>{discountedCount}</dd></div>
+            <div><dt>Rating rata-rata</dt><dd>{averageRating ? averageRating.toFixed(1) : '—'}<small>/5</small></dd></div>
+          </dl>
+          <Link className="admin-primary-link" href="/admin/cms">Buka pengaturan CMS <ArrowRight /></Link>
+        </article>
+      </section>
     </div>
   );
 }

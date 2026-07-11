@@ -24,25 +24,13 @@ export function AdminSidebar() {
   };
 
   return (
-    <aside style={{
-      width: '240px',
-      minHeight: '100vh',
-      background: '#fff',
-      borderRight: '1px solid #e1e0db',
-      padding: '24px 16px',
-      display: 'flex',
-      flexDirection: 'column',
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      zIndex: 50,
-    }}>
-      <div style={{ marginBottom: '32px', padding: '0 8px' }}>
-        <span style={{ color: '#e3262e', fontSize: '10px', fontWeight: '800', letterSpacing: '1.2px' }}>CPX MANAGEMENT</span>
-        <h2 style={{ font: '700 18px var(--font-oswald)', margin: '4px 0 0', textTransform: 'uppercase', letterSpacing: '-0.3px' }}>Admin Panel</h2>
+    <aside className="admin-sidebar">
+      <div className="admin-sidebar__brand">
+        <span>CPX MANAGEMENT</span>
+        <h2>Admin</h2>
       </div>
 
-      <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
+      <nav aria-label="Navigasi admin">
         {navItems.map(item => {
           const isActive = item.href === '/admin'
             ? pathname === '/admin'
@@ -52,21 +40,11 @@ export function AdminSidebar() {
             <a
               key={item.href}
               href={item.href}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                padding: '11px 12px',
-                borderRadius: '6px',
-                textDecoration: 'none',
-                font: '700 13px var(--font-inter)',
-                color: isActive ? '#e3262e' : '#444',
-                background: isActive ? '#f5f4f0' : 'transparent',
-                transition: 'all 0.15s',
-              }}
+              className={`admin-sidebar__link${isActive ? ' is-active' : ''}`}
+              aria-current={isActive ? 'page' : undefined}
             >
               <Icon style={{ width: '16px' }} />
-              {item.label}
+              <span>{item.label}</span>
             </a>
           );
         })}
@@ -74,23 +52,10 @@ export function AdminSidebar() {
 
       <button
         onClick={handleLogout}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          padding: '11px 12px',
-          borderRadius: '6px',
-          border: 'none',
-          background: 'none',
-          font: '700 13px var(--font-inter)',
-          color: '#e3262e',
-          cursor: 'pointer',
-          marginTop: '8px',
-          transition: 'all 0.15s',
-        }}
+        className="admin-sidebar__logout"
       >
         <LogOut style={{ width: '16px' }} />
-        Keluar
+        <span>Keluar</span>
       </button>
     </aside>
   );
